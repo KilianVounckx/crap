@@ -1,0 +1,9 @@
+*
+!*/
+!.gitignore
+
+!/package/**/*.roc
+!/examples/**/*.roc
+
+!/LICENSE
+!/README.md
