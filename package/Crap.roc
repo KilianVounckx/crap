@@ -226,6 +226,21 @@ decodeRecord = \initialState, stepField, finalizer -> Decode.custom \bytes, @Cra
         decodeFields initialState bytes
 
 decodeTuple : state, (state, U64 -> [Next (Decoder state Crap), TooLong]), (state -> Result val DecodeError) -> Decoder val Crap
+decodeTuple = \initialState, stepElem, finalizer -> Decode.custom \bytes, @Crap {} ->
+        decodeFields = \index, tupleState, leftOver ->
+            when stepElem tupleState index is
+                TooLong ->
+                    when finalizer tupleState is 
+                        Ok val -> { result: Ok val, rest: leftOver }
+                        Err e -> { result: Err e, rest: [] }
+                Next valueDecoder ->
+                    { val: updatedTuple, rest: bytesAfterValue } <-
+                        Decode.decodeWith leftOver valueDecoder (@Crap {})
+                        |> tryDecode
+                    decodeFields (index + 1) updatedTuple bytesAfterValue
+
+        decodeFields 0 initialState bytes
+
 decodeList : Decoder elem Crap -> Decoder (List elem) Crap
 
 # Helpers
@@ -258,6 +273,7 @@ numberHelp = \state, byte ->
         (Minus n, b) if b == '0' -> Continue (Zero (n + 1))
         (Minus n, b) if isDigit1to9 b -> Continue (Integer (n + 1))
         (Zero n, b) if b == '.' -> Continue (FractionA (n + 1))
+        (Zero n, b) if b == '0' -> Continue (Zero (n + 1))
         (Zero n, b) if isValidEnd b -> Break (Finish n)
         (Integer n, b) if isDigit0to9 b && n <= maxBytes -> Continue (Integer (n + 1))
         (Integer n, b) if b == '.' && n < maxBytes -> Continue (FractionA (n + 1))
@@ -409,3 +425,21 @@ expect
     input = ["", "--name", "Frodo", "--age", "50"]
     got = parseArgs input
     got == Ok { name: "Frodo", age: 50 }
+
+# tuple with two numeric fields
+expect
+    input = ["", "42", "111"]
+    got = parseArgs input
+    got == Ok (42u8, 111u64)
+
+# tuple with mixed fields
+expect
+    input = ["", "42", "hello", "111"]
+    got = parseArgs input
+    got == Ok (42u8, "hello", 111u64)
+
+# record with tuple fields
+expect
+    input = ["", "--startTime", "12", "00", "--endTime", "14", "00"]
+    got = parseArgs input
+    got == Ok { startTime: (12u8, 00u8), endTime: (14u8, 00u8) }
