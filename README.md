@@ -1,7 +1,7 @@
 # Crap
 
 Proof of concept argument parser in [roc](https://roc-lang.org) using its
-`Decode` builtin. This allows a record to be used with for cli arguments.
+`Decode` builtin. This allows a record to be used as a specification for cli arguments.
 
 ## Notes
 
