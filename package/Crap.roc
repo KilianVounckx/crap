@@ -230,9 +230,10 @@ decodeTuple = \initialState, stepElem, finalizer -> Decode.custom \bytes, @Crap 
         decodeFields = \index, tupleState, leftOver ->
             when stepElem tupleState index is
                 TooLong ->
-                    when finalizer tupleState is 
+                    when finalizer tupleState is
                         Ok val -> { result: Ok val, rest: leftOver }
                         Err e -> { result: Err e, rest: [] }
+
                 Next valueDecoder ->
                     { val: updatedTuple, rest: bytesAfterValue } <-
                         Decode.decodeWith leftOver valueDecoder (@Crap {})
