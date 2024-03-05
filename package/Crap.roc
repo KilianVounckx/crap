@@ -306,61 +306,61 @@ isValidEnd = \b ->
 
 # U8
 expect
-    input = ["255"]
+    input = ["", "255"]
     got = parseArgs input
     got == Ok 255u8
 
 # U16
 expect
-    input = ["65535"]
+    input = ["", "65535"]
     got = parseArgs input
     got == Ok 65535u16
 
 # U32
 expect
-    input = ["4000000000"]
+    input = ["", "4000000000"]
     got = parseArgs input
     got == Ok 4000000000u32
 
 # U64
 expect
-    input = ["18446744073709551614"]
+    input = ["", "18446744073709551614"]
     got = parseArgs input
     got == Ok 18446744073709551614u64
 
 # U128
 expect
-    input = ["1234567"]
+    input = ["", "1234567"]
     got = parseArgs input
     got == Ok 1234567u128
 
 # I8
 expect
-    input = ["-125"]
+    input = ["", "-125"]
     got = parseArgs input
     got == Ok -125i8
 
 # I16
 expect
-    input = ["-32768"]
+    input = ["", "-32768"]
     got = parseArgs input
     got == Ok -32768i16
 
 # I32
 expect
-    input = ["-2147483648"]
+    input = ["", "-2147483648"]
     got = parseArgs input
     got == Ok -2147483648i32
 
 # I64
 expect
-    input = ["-9223372036854775808"]
+    input = ["", "-9223372036854775808"]
     got = parseArgs input
     got == Ok -9223372036854775808i64
 
 # F32
 expect
-    input = ["12.34e-5"]
+    input = ["", "12.34e-5"]
     got : Result F32 _
     got = parseArgs input
     gotStr = Result.map got Num.toStr
@@ -368,7 +368,7 @@ expect
 
 # F64
 expect
-    input = ["12.34e-5"]
+    input = ["", "12.34e-5"]
     got : Result F64 _
     got = parseArgs input
     gotStr = Result.map got Num.toStr
@@ -376,17 +376,17 @@ expect
 
 # F64
 expect
-    input = ["12.0034"]
+    input = ["", "12.0034"]
     got = parseArgs input
     got == Ok 12.0034dec
 
 # Bool
 expect
-    input1 = ["false"]
+    input1 = ["", "false"]
     got1 = parseArgs input1
     check1 = got1 == Ok Bool.false
 
-    input2 = ["true"]
+    input2 = ["", "true"]
     got2 = parseArgs input2
     check2 = got2 == Ok Bool.true
 
@@ -394,18 +394,18 @@ expect
 
 # string
 expect
-    input = ["Hello, World!"]
+    input = ["", "Hello, World!"]
     got = parseArgs input
     got == Ok "Hello, World!"
 
 # record with one numeric field
 expect
-    input = ["--hi", "42"]
+    input = ["", "--hi", "42"]
     got = parseArgs input
     got == Ok { hi: 42 }
 
 # record with mixed fields
 expect
-    input = ["--name", "Frodo", "--age", "50"]
+    input = ["", "--name", "Frodo", "--age", "50"]
     got = parseArgs input
     got == Ok { name: "Frodo", age: 50 }
