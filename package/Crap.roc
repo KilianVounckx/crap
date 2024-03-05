@@ -37,8 +37,9 @@ parseArgs = \args ->
     |> Decode.fromBytes (@Crap {})
 
 prepareBytes : List Str -> List U8
-prepareBytes = \str ->
-    str
+prepareBytes = \args ->
+    args
+    |> List.dropFirst 1 # drop process name
     |> List.joinMap \s ->
         s
         |> Str.toUtf8
